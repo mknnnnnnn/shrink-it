@@ -6,7 +6,7 @@ class URLCreate(BaseModel):
     original_url: HttpUrl
     short_code: str | None = None
     expires_at: datetime | None = None
-    click_max: int | None = None
+    click_max: int | None = Field(default=None, ge=1)
 
 
 class URLResponse(BaseModel):
