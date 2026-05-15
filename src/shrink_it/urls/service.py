@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from random import choices
+from datetime import datetime
 import string
 
 from sqlalchemy.orm import Session
@@ -40,6 +41,19 @@ def url_get(db: Session):
     return db.scalars(statement).all()
 
 
+def url_delete(id: int, db: Session):
+    db_url = db.get(URL, id)
+    if db_url is None:
+        raise HTTPException(status_code=404, detail="URL NOT FOUND")
+    
+    if db_url.click_count >= db_url.click_max:
+        raise HTTPException(status_code=403, detail="URL CLICK LIMIT HAS BEEN REACHED")
+    db.delete(db_url)
+    db.commit()
+
+    return {"message": "Success"}
+
+
 def url_get_by_short_code(short_code: str, db: Session):
     statement = select(URL).where(URL.short_code == short_code)
     db_url = db.scalar(statement)
@@ -51,7 +65,7 @@ def url_get_by_short_code(short_code: str, db: Session):
         raise HTTPException(status_code=400, detail="URL INACTIVE")
 
     if db_url.click_max is not None and db_url.click_count >= db_url.click_max:
-        raise HTTPException(status_code=403, detail="URL click limit has benn reached")
+        raise HTTPException(status_code=403, detail="UURL CLICK LIMIT HAS BEEN REACHED")
 
     increase_click_count(db_url, db)
 
@@ -92,8 +106,29 @@ def url_activate(id: int, db: Session):
     return db_url
 
 
-# Change click max
+def change_max_click(id: int, limit: int, db: Session):
+    db_url = db.get(URL, id)
 
-# Change expire date
+    if db_url is None:
+        raise HTTPException(status_code=404, detail="NOT FOUND")
 
-# Delete url
+    db_url.click_max = limit
+
+    db.commit()
+    db.refresh(db_url)
+
+    return db_url
+
+
+def change_expire_date(id: int, expire_date: datetime, db: Session):
+    db_url = db.get(URL, id)
+
+    if db_url is None:
+        raise HTTPException(status_code=404, detail="URL NOT FOUND")
+
+    db_url.expires_at = expire_date
+
+    db.commit()
+    db.refresh(db_url)
+
+    return db_url
