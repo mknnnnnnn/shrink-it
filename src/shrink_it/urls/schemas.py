@@ -15,7 +15,7 @@ class URLResponse(BaseModel):
     short_code: str
     created_at: datetime
     expires_at: datetime | None = None
-    click_count: int
+    click_count: int | None = None
     click_max: int | None = Field(default=None, ge=1)
     is_active: bool = True
 

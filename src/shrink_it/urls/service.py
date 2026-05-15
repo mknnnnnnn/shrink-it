@@ -43,11 +43,10 @@ def url_get(db: Session):
 
 def url_delete(id: int, db: Session):
     db_url = db.get(URL, id)
+
     if db_url is None:
         raise HTTPException(status_code=404, detail="URL NOT FOUND")
-    
-    if db_url.click_count >= db_url.click_max:
-        raise HTTPException(status_code=403, detail="URL CLICK LIMIT HAS BEEN REACHED")
+
     db.delete(db_url)
     db.commit()
 
@@ -64,10 +63,13 @@ def url_get_by_short_code(short_code: str, db: Session):
     if db_url.is_active is False:
         raise HTTPException(status_code=400, detail="URL INACTIVE")
 
+    if db_url.click_count is None:
+        db_url.click_count = 1
+    else:
+        increase_click_count(db_url, db)
+
     if db_url.click_max is not None and db_url.click_count >= db_url.click_max:
         raise HTTPException(status_code=403, detail="UURL CLICK LIMIT HAS BEEN REACHED")
-
-    increase_click_count(db_url, db)
 
     return db_url
 

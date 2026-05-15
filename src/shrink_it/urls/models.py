@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, DateTime, Boolean, func
+from sqlalchemy import Integer, String, DateTime, Boolean, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 from ..database import Base
@@ -16,6 +16,8 @@ class URL(Base):
         DateTime, nullable=False, default=func.now()
     )
     expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    click_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    click_count: Mapped[int | None] = mapped_column(Integer, default=0, nullable=True)
     click_max: Mapped[int | None] = mapped_column(Integer, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+    # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
