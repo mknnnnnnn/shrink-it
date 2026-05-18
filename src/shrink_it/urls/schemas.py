@@ -16,7 +16,7 @@ class URLResponse(BaseModel):
     created_at: datetime
     expires_at: datetime | None = None
     click_count: int | None = None
-    click_max: int | None = Field(default=None, ge=1)
+    click_max: int | None = None
     is_active: bool = True
 
     model_config = ConfigDict(from_attributes=True)

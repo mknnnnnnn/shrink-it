@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, Boolean, DateTime, func
+from sqlalchemy import String, Boolean, DateTime, func
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from typing import TYPE_CHECKING
 from ..database import Base
@@ -19,7 +19,7 @@ class User(Base):
     phone_number: Mapped[str | None] = mapped_column(
         String, nullable=True, default=None, unique=True, index=True
     )
-    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )
