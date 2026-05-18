@@ -1,6 +1,7 @@
-from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy import String, Integer, Boolean, DateTime, func
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 from ..database import Base
+from ..urls.models import URL
 from datetime import datetime
 
 
@@ -17,4 +18,8 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
+    )
+
+    urls: Mapped[list["URL"]] = relationship(
+        "URL", back_populates="user", cascade="all, delete-orphan"
     )

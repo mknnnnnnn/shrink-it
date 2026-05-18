@@ -1,7 +1,8 @@
 from sqlalchemy import Integer, String, DateTime, Boolean, func, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from ..database import Base
+from ..users.models import User
 
 
 class URL(Base):
@@ -20,4 +21,8 @@ class URL(Base):
     click_max: Mapped[int | None] = mapped_column(Integer, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
-    # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+
+    user: Mapped["User"] = relationship("User", back_populates="urls")
