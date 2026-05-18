@@ -2,7 +2,10 @@ from sqlalchemy import Integer, String, DateTime, Boolean, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from ..database import Base
-from ..users.models import User
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..users.models import User
 
 
 class URL(Base):
