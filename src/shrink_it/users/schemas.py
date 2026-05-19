@@ -8,10 +8,15 @@ class UserBase(BaseModel):
     email: EmailStr
     phone_number: str | None = None
     is_active: bool = True
+    is_admin: bool | None = False
 
 
-class UserCreate(UserBase):
-    pass
+class UserCreate(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+    phone_number: str | None = None
+    is_active: bool = True
 
 
 class UserResponse(UserBase):
