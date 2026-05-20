@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from .schemas import UserCreate, UserResponse
+from .schemas import UserResponse
 from sqlalchemy.orm import Session
 from ..database import get_db
 
