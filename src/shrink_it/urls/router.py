@@ -31,11 +31,6 @@ def get_url_by_short_code(shore_code: str, db: Session = Depends(get_db)):
     return url_get_by_short_code_service(short_code=shore_code, db=db)
 
 
-@router.delete("/delete/{id}")
-def url_delete(id: int, db: Session = Depends(get_db)):
-    return url_delete_service(id=id, db=db)
-
-
 @router.patch("/deactivate/{id}", response_model=URLResponse)
 def url_deactivate(id: int, db: Session = Depends(get_db)):
     return url_deactivate_service(id=id, db=db)
@@ -46,6 +41,9 @@ def url_activate(id: int, db: Session = Depends(get_db)):
     return url_activate_service(id=id, db=db)
 
 
+# Only admin endpoints
+
+
 @router.patch("/max_click/{id}/{limit}", response_model=URLResponse)
 def change_max_click(id: int, limit: int, db: Session = Depends(get_db)):
     return change_max_click_service(id=id, limit=limit, db=db)
@@ -54,3 +52,8 @@ def change_max_click(id: int, limit: int, db: Session = Depends(get_db)):
 @router.patch("/expire_date/{id}/{expire_date}", response_model=URLResponse)
 def change_expire_date(id: int, expire_date: datetime, db: Session = Depends(get_db)):
     return change_expire_date_service(id=id, expire_date=expire_date, db=db)
+
+
+@router.delete("/delete/{id}")
+def url_delete(id: int, db: Session = Depends(get_db)):
+    return url_delete_service(id=id, db=db)
