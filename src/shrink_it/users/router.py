@@ -10,6 +10,8 @@ from .service import (
 
 router = APIRouter(tags=["me"], prefix="/me")
 
+# Only admin endpoints
+
 
 @router.get("/get", response_model=list[UserResponse])
 def users_get(db: Session = Depends(get_db)):

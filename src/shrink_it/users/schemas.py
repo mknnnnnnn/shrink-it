@@ -6,21 +6,26 @@ class UserBase(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
+    password: str
     phone_number: str | None = None
     is_active: bool = True
     is_admin: bool | None = False
 
 
-class UserCreate(BaseModel):
+class UserRegister(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
+    password: str
     phone_number: str | None = None
-    is_active: bool = True
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
 
 class UserResponse(UserBase):
-    id: int
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
