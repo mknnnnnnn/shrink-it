@@ -1,6 +1,6 @@
 from ..users.models import User
 from ..users.schemas import UserLogin, UserRegister
-from .security import hash_password, verify_password
+from .security import hash_password, verify_password, create_token
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from fastapi import HTTPException
@@ -25,10 +25,15 @@ def login_user(user: UserLogin, db: Session):
     db_user = db.scalar(statement)
 
     if db_user is None:
-        raise HTTPException(status_code=403, detail="USER NOT FOUND")
+        raise HTTPException(status_code=403, detail="Invalid credentials")
     
     if not verify_password(user.password, db_user.password):
-        raise HTTPException(status_code=401, detail="FORBIDDEN")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    return db_user
+    access_token = create_token({"sub": db_user.email})
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
 
