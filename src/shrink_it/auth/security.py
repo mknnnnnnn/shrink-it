@@ -6,11 +6,14 @@ from fastapi import HTTPException
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 def hash_password(password: str) -> str:
     return password_context.hash(password)
 
+
 def verify_password(password: str, hashed_password: str) -> bool:
     return password_context.verify(password, hashed_password)
+
 
 def create_token(data: dict):
     to_encode = data.copy()
@@ -19,9 +22,10 @@ def create_token(data: dict):
 
     to_encode.update({"exp": expire})
 
-    encoded_jwt = jwt.encode(to_encode, SECRET, algorithm=[ALGORITHM])
+    encoded_jwt = jwt.encode(to_encode, SECRET, algorithm=ALGORITHM)
 
     return encoded_jwt
+
 
 def decode_token(token: str):
     try:
