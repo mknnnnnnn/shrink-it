@@ -2,7 +2,6 @@ from fastapi import Depends, HTTPException
 from .models import User
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from ..auth.security import hash_password, verify_password
 
 
 def user_get(db: Session):
