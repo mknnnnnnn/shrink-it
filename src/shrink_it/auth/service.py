@@ -34,4 +34,4 @@ def login_user(email: str, password: str, db: Session):
 
     access_token = create_token({"email": db_user.email})
 
-    return {"token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer"}
