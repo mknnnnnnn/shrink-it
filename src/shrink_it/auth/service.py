@@ -22,16 +22,16 @@ def register_user(user: UserRegister, db: Session):
     return db_user
 
 
-def login_user(user: UserLogin, db: Session):
-    statement = select(User).where(User.email == user.email)
+def login_user(email: str, password: str, db: Session):
+    statement = select(User).where(User.email == email)
     db_user = db.scalar(statement)
 
     if db_user is None:
         raise HTTPException(status_code=403, detail="Invalid credentials")
 
-    if not verify_password(user.password, db_user.password):
+    if not verify_password(password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     access_token = create_token({"email": db_user.email})
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"token": access_token, "token_type": "bearer"}
