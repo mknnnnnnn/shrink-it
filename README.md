@@ -1,22 +1,21 @@
 # Shrink it
 
-Shrink it is a backend URL shortner project built with FastAPI, PostgreSQL and Docker.
+Shrink it is a backend URL shortener project built with FastAPI, PostgreSQL and Docker.
 
-The goal of the project is to create more than a basic URL shortener. The planned version will include features such as custom aliases, click analytics, QR codes and link expiration.
+The project provides more than basic URL shortening. It includes support for custom aliases, click analytics, link expiration and user accounts.
 
-## Planned Features
+## Features
 
-- Shorten long URLs
-- Redirect short links to original URLs
-- Custom short aliases
-- Link expiration
-- One-time links
-- PostgreSQL storage
-- Click counter
-- Click analytics
-- Maximum click limits
-- QR code generation
-- User accounts
+- Shortens long URLs
+- Redirects short links to original URLs
+- Supports custom short aliases
+- Supports link expiration
+- Supports one-time links
+- Stores data in PostgreSQL
+- Tracks click counts
+- Provides click analytics
+- Supports maximum click limits
+- Supports user accounts
 
 ## Built With
 
