@@ -1,17 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from datetime import datetime
-from .service import (
-    url_create as url_create_service,
-    url_get_by_short_code as url_get_by_short_code_service,
-    url_get as url_get_service,
-    url_deactivate as url_deactivate_service,
-    url_activate as url_activate_service,
-    change_max_click as change_max_click_service,
-    change_expire_date as change_expire_date_service,
-    url_delete as url_delete_service,
-    generate_qr_code as generate_qr_code_service,
-)
+from . import service
 from .schemas import *
 from ..database import get_db
 from ..auth.dependencies import get_current_user, require_admin
@@ -19,61 +9,61 @@ from ..auth.dependencies import get_current_user, require_admin
 router = APIRouter(tags=["urls"], prefix="/urls")
 
 
-@router.get("/qr")
-def generate_qr_code(short_code: str):
-    return generate_qr_code_service(short_code=short_code)
-
-
-@router.post("/create")
+@router.post("")
 def create_url(
     url: URLCreate, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
-    return url_create_service(url=url, db=db)
+    return service.url_create(url=url, db=db)
 
 
-@router.get("/get", response_model=list[URLResponse])
+@router.get("", response_model=list[URLResponse])
 def get_url(db: Session = Depends(get_db), user=Depends(get_current_user)):
-    return url_get_service(db=db)
+    return service.url_get(db=db)
 
 
-@router.get("/{short_code}", response_model=URLResponse)
+@router.get("/qr")
+def generate_qr_code(short_code: str):
+    return service.generate_qr_code(short_code=short_code)
+
+
+@router.get("/code/{short_code}", response_model=URLResponse)
 def get_url_by_short_code(
     short_code: str, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
-    return url_get_by_short_code_service(short_code=short_code, db=db)
+    return service.url_get_by_short_code(short_code=short_code, db=db)
 
 
-@router.patch("/deactivate/{id}", response_model=URLResponse)
+@router.patch("/{id}/deactivate", response_model=URLResponse)
 def url_deactivate(
     id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
-    return url_deactivate_service(id=id, db=db)
+    return service.url_deactivate(id=id, db=db)
 
 
-@router.patch("/activate/{id}", response_model=URLResponse)
+@router.patch("/{id}/activate", response_model=URLResponse)
 def url_activate(
     id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
-    return url_activate_service(id=id, db=db)
+    return service.url_activate(id=id, db=db)
 
 
-@router.delete("/delete/{id}")
+@router.delete("/{id}")
 def url_delete(id: int, db: Session = Depends(get_db), user=Depends(get_current_user)):
-    return url_delete_service(id=id, db=db)
+    return service.url_delete(id=id, db=db)
 
 
 # Only admin endpoints
 
 
-@router.patch("/max_click/{id}/{limit}", response_model=URLResponse)
+@router.patch("/{id}/max-clicks/{limit}", response_model=URLResponse)
 def change_max_click(
     id: int, limit: int, db: Session = Depends(get_db), user=Depends(require_admin)
 ):
-    return change_max_click_service(id=id, limit=limit, db=db)
+    return service.change_max_click(id=id, limit=limit, db=db)
 
 
 @router.patch(
-    "/expire_date/{id}/{expire_date}",
+    "/{id}/expire-date/{expire_date}",
     response_model=URLResponse,
 )
 def change_expire_date(
@@ -82,4 +72,4 @@ def change_expire_date(
     db: Session = Depends(get_db),
     user=Depends(require_admin),
 ):
-    return change_expire_date_service(id=id, expire_date=expire_date, db=db)
+    return service.change_expire_date(id=id, expire_date=expire_date, db=db)
