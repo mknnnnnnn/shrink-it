@@ -13,7 +13,7 @@ router = APIRouter(tags=["urls"], prefix="/urls")
 def create_url(
     url: URLCreate, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
-    return service.url_create(url=url, db=db)
+    return service.url_create(url=url, db=db, user_id=user.id)
 
 
 @router.get("", response_model=list[URLResponse])

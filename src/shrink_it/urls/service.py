@@ -32,14 +32,11 @@ def increase_click_count(url: URL, db: Session):
     db.commit()
 
 
-def url_create(url: URLCreate, db: Session):
+def url_create(url: URLCreate, db: Session, user_id: int):
     short_code = url.short_code or generate_code()
 
     db_url = URL(
-        original_url=str(url.original_url),
-        short_code=short_code,
-        expires_at=url.expires_at,
-        click_max=url.click_max,
+        original_url=str(url.original_url), short_code=short_code, user_id=user_id
     )
 
     db.add(db_url)
