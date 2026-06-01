@@ -17,8 +17,11 @@ def generate_code(length: int = 5) -> str:
     return "".join(choices(string.ascii_letters + string.digits, k=length))
 
 
-def generate_qr_code(short_code: str):
-    img = qrcode.make(short_code)
+def generate_qr_code(short_code: str, db: Session):
+    statement = select(URL).where(URL.short_code == short_code)
+    db_url = db.scalar(statement)
+
+    img = qrcode.make(db_url.original_url)
     buffer = BytesIO()
 
     img.save(buffer, format="PNG")
