@@ -10,12 +10,18 @@ from .service import (
     change_max_click as change_max_click_service,
     change_expire_date as change_expire_date_service,
     url_delete as url_delete_service,
+    generate_qr_code as generate_qr_code_service,
 )
 from .schemas import *
 from ..database import get_db
 from ..auth.dependencies import get_current_user, require_admin
 
 router = APIRouter(tags=["urls"], prefix="/urls")
+
+
+@router.get("/qr")
+def generate_qr_code(short_code: str):
+    return generate_qr_code_service(short_code=short_code)
 
 
 @router.post("/create")

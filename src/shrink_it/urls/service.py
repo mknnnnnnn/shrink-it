@@ -1,7 +1,10 @@
 from fastapi import HTTPException
+from fastapi.responses import StreamingResponse
 from random import choices
 from datetime import datetime
+from io import BytesIO
 import string
+import qrcode
 
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -12,6 +15,16 @@ from .models import URL
 
 def generate_code(length: int = 5) -> str:
     return "".join(choices(string.ascii_letters + string.digits, k=length))
+
+
+def generate_qr_code(short_code: str):
+    img = qrcode.make(short_code)
+    buffer = BytesIO()
+
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    return StreamingResponse(buffer, status_code=200, media_type="image/png")
 
 
 def increase_click_count(url: URL, db: Session):
