@@ -33,7 +33,6 @@ def get_current_user(
 
 
 def require_admin(user: User = Depends(get_current_user)):
-    print("REQUIRE ADMIN:", user.email, user.is_admin)
     if not user.is_admin:
         raise HTTPException(status_code=403, detail="Invalid credentials")
 

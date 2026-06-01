@@ -18,3 +18,14 @@ def user_get_by_id(id: int, db: Session):
     if db_user is None:
         raise HTTPException(status_code=404, detail="USER NOT FOUND")
     return db_user
+
+def user_delete(id: int, db: Session):
+    db_user = db.get(User, id)
+
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="USER NOT FOUND")
+
+    db.delete(db_user)
+    db.commit()
+
+    return {"message": "success"}
