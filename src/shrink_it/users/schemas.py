@@ -6,7 +6,6 @@ class UserBase(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
-    password: str
     phone_number: str | None = None
     is_active: bool = True
     is_admin: bool | None = False
