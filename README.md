@@ -26,3 +26,37 @@ The project provides more than basic URL shortening. It includes support for cus
 - Pydantic
 - Docker
 - Docker Compose
+
+## Setup - Docker Compose
+
+Clone the repository:
+```bash
+git clone https://github.com/mknnnnnnn/shrink-it
+cd shrink-it
+```
+Create an `.env` file:
+```bash
+cp .env.example .env
+```
+
+Start the application:
+```bash
+docker compose up -d
+```
+
+### Usage
+
+Open Swagger in your browser:
+```text
+http://localhost:8000/docs
+```
+
+Stop the application:
+```bash
+docker compose down
+```
+
+Remove the database volume:
+```bash
+docker compose down -v
+```
