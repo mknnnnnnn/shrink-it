@@ -112,6 +112,8 @@ cp .env.example .env
 
 Start the application:
 ```bash
+docker compose up -d db
+docker compose run --rm api alembic upgrade head
 docker compose up -d
 ```
 
