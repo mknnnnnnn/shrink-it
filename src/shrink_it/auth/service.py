@@ -27,7 +27,7 @@ def login_user(email: str, password: str, db: Session):
     db_user = db.scalar(statement)
 
     if db_user is None:
-        raise HTTPException(status_code=403, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
     if not verify_password(password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
