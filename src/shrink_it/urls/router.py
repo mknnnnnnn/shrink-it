@@ -22,7 +22,7 @@ def get_url(db: Session = Depends(get_db), user=Depends(get_current_user)):
 
 
 @router.get("/qr")
-def generate_qr_code(short_code: str, db: Session = Depends(get_db)):
+def generate_qr_code(short_code: str, db: Session = Depends(get_db), user = Depends(get_current_user)):
     return service.generate_qr_code(short_code=short_code, db=db)
 
 
