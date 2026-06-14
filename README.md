@@ -17,7 +17,7 @@ The project provides more than basic URL shortening. It includes support for cus
 - Supports maximum click limits
 - Supports user accounts
 
-## Built With
+## Tech Stack
 
 - Python
 - FastAPI
@@ -26,6 +26,77 @@ The project provides more than basic URL shortening. It includes support for cus
 - Pydantic
 - Docker
 - Docker Compose
+
+## Overview
+
+### Short links
+
+Each long URL can be converted into a shorter code:
+
+```txt
+https://example.com
+```
+can become:
+```txt
+http://localhost:8000/example-short-code
+```
+
+### Custom aliases
+Users can provide custom aliases instead of using randomly generated short code.
+
+### Link expiration
+Links can expire after the given date and time. Links will be no longer available after expiration.
+
+### One-time links
+Links can be opened only once. 
+
+### Maximum click limits
+User can set the maximum number of allowed clicks. After reaching the limit, the link is not longer available.
+
+### Click analytics
+The application track link usage, including click count and basics information.
+
+## API Methods
+
+### URL API
+
+All URL endpoints require authentication.  
+Changing the maximum click limit and expiration date requires admin permissions.
+
+| Method | Endpoint | Required role | Description |
+|---|---|---|---|
+| `GET` | `/urls` | User | Get all URLs available for the authenticated user |
+| `POST` | `/urls` | User | Create a new short URL |
+| `GET` | `/urls/qr` | User | Generate a QR code for a URL |
+| `GET` | `/urls/code/{short_code}` | User | Get URL details by short code |
+| `PATCH` | `/urls/{id}/deactivate` | User | Deactivate a URL |
+| `PATCH` | `/urls/{id}/activate` | User | Activate a URL |
+| `DELETE` | `/urls/{id}` | User | Delete a URL |
+| `PATCH` | `/urls/{id}/max-clicks/{limit}` | Admin | Change the maximum click limit for a URL |
+| `PATCH` | `/urls/{id}/expire-date/{expire_date}` | Admin | Change the expiration date for a URL |
+
+### Users API
+
+All user management endpoints require admin permissions.
+
+| Method | Endpoint | Required role | Description |
+|---|---|---|---|
+| `GET` | `/users` | Admin | Get all users |
+| `GET` | `/users/{id}` | Admin | Get user details by ID |
+| `DELETE` | `/users/{id}/delete` | Admin | Delete a user |
+| `PATCH` | `/users/{id}/active-status/{status}` | Admin | Change user active status |
+| `PATCH` | `/users/{id}/admin-status/{status}` | Admin | Change user admin status |
+
+### Authentication API
+
+Authentication is handled with OAuth2 password flow and JWT bearer tokens.
+
+| Method | Endpoint | Required role | Description |
+|---|---|---|---|
+| `POST` | `/auth/register` | Public | Register a new user |
+| `POST` | `/auth/login` | Public | Log in user and return a bearer token |
+
+In Swagger UI, users can authenticate by clicking the **Authorize** button and providing their username and password.
 
 ## Setup - Docker Compose
 
