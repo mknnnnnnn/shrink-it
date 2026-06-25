@@ -29,7 +29,7 @@ def test_create_url_with_no_auth():
         client = TestClient(app)
 
         response = client.post(
-            "/urls", data={"orginal_url": orginal_url, "shot_code": short_code}
+            "/urls", data={"orginal_url": orginal_url, "short_code": short_code}
         )
 
         assert response.status_code == 401
