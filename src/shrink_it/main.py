@@ -4,7 +4,6 @@ from .urls.router import router as urls_router
 from .users.router import router as users_router
 from .auth.router import router as auth_router
 
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
