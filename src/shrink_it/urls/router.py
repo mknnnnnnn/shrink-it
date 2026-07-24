@@ -50,7 +50,9 @@ def url_activate(
 
 
 @router.delete("/{id}")
-def url_delete(id: int, user_id:int, db: Session = Depends(get_db), user=Depends(get_current_user)):
+def url_delete(
+    id: int, user_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
+):
     return service.url_delete(id=id, user_id=user_id, db=db)
 
 
