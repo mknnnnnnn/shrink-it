@@ -17,9 +17,12 @@ def generate_code(length: int = 5) -> str:
     return "".join(choices(string.ascii_letters + string.digits, k=length))
 
 
-def generate_qr_code(short_code: str, db: Session):
-    statement = select(URL).where(URL.short_code == short_code)
+def generate_qr_code(short_code: str, user_id: int, db: Session):
+    statement = select(URL).where(URL.short_code == short_code, URL.user_id == user_id)
     db_url = db.scalar(statement)
+
+    if db_url is None:
+        raise HTTPException(status_code=404, detail="URL NOT FOUND")
 
     img = qrcode.make(db_url.original_url)
     buffer = BytesIO()
@@ -67,8 +70,8 @@ def url_delete(id: int, user_id: int, db: Session):
     return {"message": "Success"}
 
 
-def url_get_by_short_code(short_code: str, db: Session):
-    statement = select(URL).where(URL.short_code == short_code)
+def url_get_by_short_code(short_code: str, user_id: int, db: Session):
+    statement = select(URL).where(URL.short_code == short_code, URL.user_id == user_id)
     db_url = db.scalar(statement)
 
     if db_url is None:
