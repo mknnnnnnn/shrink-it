@@ -1,8 +1,8 @@
 # Shrink it
 
-Shrink it is a backend URL shortener project built with FastAPI, PostgreSQL and Docker.
+Shrink it is a backend URL shortener built with FastAPI, PostgreSQL, and Docker.
 
-The project provides more than basic URL shortening. It includes support for custom aliases, click analytics, link expiration and user accounts.
+It supports custom aliases, QR code generation, click analytics, link expiration, click limits, and user authentication.
 
 ## Features
 
@@ -23,6 +23,7 @@ The project provides more than basic URL shortening. It includes support for cus
 - FastAPI
 - PostgreSQL
 - SQLAlchemy
+- Alembic
 - Pydantic
 - Docker
 - Docker Compose
@@ -60,7 +61,8 @@ The application track link usage, including click count and basics information.
 
 ### URL API
 
-All URL endpoints require authentication.  
+Most URL endpoints require authentication. 
+The `urls/code/{short_code}` endpoint is public and redicts to the orginal URL.
 Changing the maximum click limit and expiration date requires admin permissions.
 
 | Method | Endpoint | Required role | Description |
@@ -68,7 +70,7 @@ Changing the maximum click limit and expiration date requires admin permissions.
 | `GET` | `/urls` | User | Get all URLs available for the authenticated user |
 | `POST` | `/urls` | User | Create a new short URL |
 | `GET` | `/urls/qr` | User | Generate a QR code for a URL |
-| `GET` | `/urls/code/{short_code}` | User | Get URL details by short code |
+| `GET` | `/urls/code/{short_code}` | Public | Get URL details by short code |
 | `PATCH` | `/urls/{id}/deactivate` | User | Deactivate a URL |
 | `PATCH` | `/urls/{id}/activate` | User | Activate a URL |
 | `DELETE` | `/urls/{id}` | User | Delete a URL |
