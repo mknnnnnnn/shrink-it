@@ -39,14 +39,14 @@ def get_url_by_short_code(
 def url_deactivate(
     id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
-    return service.url_deactivate(id=id, db=db)
+    return service.url_deactivate(id=id, user_id=user.id, db=db)
 
 
 @router.patch("/{id}/activate", response_model=URLResponse)
 def url_activate(
     id: int, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
-    return service.url_activate(id=id, db=db)
+    return service.url_activate(id=id, user_id=user.id, db=db)
 
 
 @router.delete("/{id}")

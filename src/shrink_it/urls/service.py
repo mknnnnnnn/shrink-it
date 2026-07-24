@@ -88,8 +88,8 @@ def url_get_by_short_code(short_code: str, db: Session):
     return db_url
 
 
-def url_deactivate(id: int, db: Session):
-    statement = select(URL).where(URL.id == id)
+def url_deactivate(id: int, user_id: int, db: Session):
+    statement = select(URL).where(URL.id == id, URL.user_id==user_id)
     db_url = db.scalar(statement)
 
     if db_url is None:
@@ -105,8 +105,8 @@ def url_deactivate(id: int, db: Session):
     return db_url
 
 
-def url_activate(id: int, db: Session):
-    statement = select(URL).where(URL.id == id)
+def url_activate(id: int, user_id:int, db: Session):
+    statement = select(URL).where(URL.id == id, URL.user_id==user_id)
     db_url = db.scalar(statement)
 
     if db_url is None:
