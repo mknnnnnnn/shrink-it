@@ -38,7 +38,7 @@ https://example.com
 ```
 can become:
 ```txt
-http://localhost:8000/example-short-code
+http://localhost:8000/urls/code/example-short-code
 ```
 
 ### Custom aliases
