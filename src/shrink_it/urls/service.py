@@ -49,8 +49,8 @@ def url_create(url: URLCreate, db: Session, user_id: int):
     return db_url
 
 
-def url_get(db: Session):
-    statement = select(URL)
+def url_get(user_id: int, db: Session):
+    statement = select(URL).where(URL.user_id == user_id)
     return db.scalars(statement).all()
 
 
