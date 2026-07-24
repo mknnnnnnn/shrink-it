@@ -34,8 +34,9 @@ def generate_qr_code(short_code: str, user_id: int, db: Session):
 
 
 def increase_click_count(url: URL, db: Session):
-    url.click_count += 1
+    url.click_count = (url.click_count or 0) + 1
     db.commit()
+    db.refresh(url)
 
 
 def url_create(url: URLCreate, db: Session, user_id: int):
@@ -80,13 +81,12 @@ def url_get_by_short_code(short_code: str, user_id: int, db: Session):
     if db_url.is_active is False:
         raise HTTPException(status_code=400, detail="URL INACTIVE")
 
-    if db_url.click_count is None:
-        db_url.click_count = 1
-    else:
-        increase_click_count(db_url, db)
+    click_count = db_url.click_count or 0
 
-    if db_url.click_max is not None and db_url.click_count >= db_url.click_max:
+    if db_url.click_max is not None and click_count >= db_url.click_max:
         raise HTTPException(status_code=403, detail="UURL CLICK LIMIT HAS BEEN REACHED")
+
+    increase_click_count(db_url, db)
 
     return db_url
 
