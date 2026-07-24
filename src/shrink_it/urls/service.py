@@ -54,8 +54,9 @@ def url_get(user_id: int, db: Session):
     return db.scalars(statement).all()
 
 
-def url_delete(id: int, db: Session):
-    db_url = db.get(URL, id)
+def url_delete(id: int, user_id: int, db: Session):
+    statement = select(URL).where(URL.user_id==user_id, URL.id==id)
+    db_url = db.scalar(statement)
 
     if db_url is None:
         raise HTTPException(status_code=404, detail="URL NOT FOUND")
