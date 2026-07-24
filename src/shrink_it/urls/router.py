@@ -7,6 +7,7 @@ from ..database import get_db
 from ..auth.dependencies import get_current_user, require_admin
 
 router = APIRouter(tags=["urls"], prefix="/urls")
+redirect_router = APIRouter(tags=["redirect"])
 
 
 @router.post("")
@@ -26,11 +27,6 @@ def generate_qr_code(
     short_code: str, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
     return service.generate_qr_code(short_code=short_code, user_id=user.id, db=db)
-
-
-@router.get("/code/{short_code}")
-def get_url_by_short_code(short_code: str, db: Session = Depends(get_db)):
-    return service.url_get_by_short_code(short_code=short_code, db=db)
 
 
 @router.patch("/{id}/deactivate", response_model=URLResponse)
@@ -73,3 +69,11 @@ def change_expire_date(
     user=Depends(require_admin),
 ):
     return service.change_expire_date(id=id, expire_date=expire_date, db=db)
+
+
+# Public endpoint
+
+
+@redirect_router.get("/{short_code}")
+def get_url_by_short_code(short_code: str, db: Session = Depends(get_db)):
+    return service.url_get_by_short_code(short_code=short_code, db=db)
