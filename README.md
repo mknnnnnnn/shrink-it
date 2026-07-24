@@ -39,7 +39,7 @@ https://example.com
 ```
 can become:
 ```txt
-http://localhost:8000/urls/code/example-short-code
+http://localhost:8000/example-short-code
 ```
 
 ### Custom aliases
@@ -62,7 +62,7 @@ The application track link usage, including click count and basics information.
 ### URL API
 
 Most URL endpoints require authentication. 
-The `urls/code/{short_code}` endpoint is public and redicts to the orginal URL.
+The `/{short_code}` endpoint is public and redirects to the orginal URL.
 Changing the maximum click limit and expiration date requires admin permissions.
 
 | Method | Endpoint | Required role | Description |
@@ -70,7 +70,7 @@ Changing the maximum click limit and expiration date requires admin permissions.
 | `GET` | `/urls` | User | Get all URLs available for the authenticated user |
 | `POST` | `/urls` | User | Create a new short URL |
 | `GET` | `/urls/qr` | User | Generate a QR code for a URL |
-| `GET` | `/urls/code/{short_code}` | Public | Get URL details by short code |
+| `GET` | `/{short_code}` | Public | Redirect to the original URL |
 | `PATCH` | `/urls/{id}/deactivate` | User | Deactivate a URL |
 | `PATCH` | `/urls/{id}/activate` | User | Activate a URL |
 | `DELETE` | `/urls/{id}` | User | Delete a URL |
