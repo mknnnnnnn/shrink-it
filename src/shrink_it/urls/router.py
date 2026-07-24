@@ -28,11 +28,9 @@ def generate_qr_code(
     return service.generate_qr_code(short_code=short_code, user_id=user.id, db=db)
 
 
-@router.get("/code/{short_code}", response_model=URLResponse)
-def get_url_by_short_code(
-    short_code: str, db: Session = Depends(get_db), user=Depends(get_current_user)
-):
-    return service.url_get_by_short_code(short_code=short_code, user_id=user.id, db=db)
+@router.get("/code/{short_code}")
+def get_url_by_short_code(short_code: str, db: Session = Depends(get_db)):
+    return service.url_get_by_short_code(short_code=short_code, db=db)
 
 
 @router.patch("/{id}/deactivate", response_model=URLResponse)

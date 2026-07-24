@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, RedirectResponse
 from random import choices
 from datetime import datetime
 from io import BytesIO
@@ -71,8 +71,8 @@ def url_delete(id: int, user_id: int, db: Session):
     return {"message": "Success"}
 
 
-def url_get_by_short_code(short_code: str, user_id: int, db: Session):
-    statement = select(URL).where(URL.short_code == short_code, URL.user_id == user_id)
+def url_get_by_short_code(short_code: str, db: Session):
+    statement = select(URL).where(URL.short_code == short_code)
     db_url = db.scalar(statement)
 
     if db_url is None:
@@ -84,11 +84,14 @@ def url_get_by_short_code(short_code: str, user_id: int, db: Session):
     click_count = db_url.click_count or 0
 
     if db_url.click_max is not None and click_count >= db_url.click_max:
-        raise HTTPException(status_code=403, detail="UURL CLICK LIMIT HAS BEEN REACHED")
+        raise HTTPException(status_code=403, detail="URL CLICK LIMIT HAS BEEN REACHED")
+
+    if db_url.expires_at is not None and db_url.expires_at <= datetime.now():
+        raise HTTPException(status_code=410, detail="URL EXPIRED")
 
     increase_click_count(db_url, db)
 
-    return db_url
+    return RedirectResponse(url=db_url.original_url)
 
 
 def url_deactivate(id: int, user_id: int, db: Session):
