@@ -30,7 +30,7 @@ def get_current_user(
 
     if db_user is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
         )
 
     if not db_user.is_active:
@@ -43,6 +43,8 @@ def get_current_user(
 
 def require_admin(user: User = Depends(get_current_user)):
     if not user.is_admin:
-        raise HTTPException(status_code=403, detail="Invalid credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+        )
 
     return user
