@@ -88,8 +88,6 @@ def url_delete(id: int, user_id: int, db: Session):
     db.delete(db_url)
     db.commit()
 
-    return {"message": "Success"}
-
 
 def url_get_by_short_code(short_code: str, db: Session):
     statement = select(URL).where(URL.short_code == short_code)

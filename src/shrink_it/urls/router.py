@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from datetime import datetime
 from . import service
@@ -43,7 +43,7 @@ def url_activate(
     return service.url_activate(id=id, user_id=user.id, db=db)
 
 
-@router.delete("/{id}")
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def url_delete(id: int, db: Session = Depends(get_db), user=Depends(get_current_user)):
     return service.url_delete(id=id, user_id=user.id, db=db)
 
