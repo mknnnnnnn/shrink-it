@@ -1,9 +1,9 @@
 from ..users.models import User
-from ..users.schemas import UserLogin, UserRegister
+from ..users.schemas import UserRegister
 from .security import hash_password, verify_password, create_token
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 
 
 def register_user(user: UserRegister, db: Session):
@@ -27,10 +27,19 @@ def login_user(email: str, password: str, db: Session):
     db_user = db.scalar(statement)
 
     if db_user is None:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+        )
 
     if not verify_password(password, db_user.password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+        )
+
+    if not db_user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+        )
 
     access_token = create_token({"email": db_user.email})
 

@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from .schemas import TokenData
@@ -19,7 +19,9 @@ def get_current_user(
     email = decoded_token.get("email")
 
     if email is None:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+        )
 
     token_data = TokenData(email=email)
 
@@ -27,7 +29,14 @@ def get_current_user(
     db_user = db.scalar(statement)
 
     if db_user is None:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials"
+        )
+
+    if not db_user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+        )
 
     return db_user
 
