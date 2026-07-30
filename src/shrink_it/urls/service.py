@@ -1,5 +1,6 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from fastapi.responses import StreamingResponse, RedirectResponse
+from sqlalchemy.exc import SQLAlchemyError
 from random import choices
 from datetime import datetime
 from io import BytesIO
@@ -22,7 +23,9 @@ def generate_qr_code(short_code: str, user_id: int, db: Session):
     db_url = db.scalar(statement)
 
     if db_url is None:
-        raise HTTPException(status_code=404, detail="URL NOT FOUND")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL NOT FOUND"
+        )
 
     img = qrcode.make(db_url.original_url)
     buffer = BytesIO()
@@ -30,7 +33,9 @@ def generate_qr_code(short_code: str, user_id: int, db: Session):
     img.save(buffer, format="PNG")
     buffer.seek(0)
 
-    return StreamingResponse(buffer, status_code=200, media_type="image/png")
+    return StreamingResponse(
+        buffer, status_code=status.HTTP_201_CREATED, media_type="image/png"
+    )
 
 
 def increase_click_count(url: URL, db: Session):
@@ -42,13 +47,26 @@ def increase_click_count(url: URL, db: Session):
 def url_create(url: URLCreate, db: Session, user_id: int):
     short_code = url.short_code or generate_code()
 
+    existing_db_url = db.scalar(select(URL).where(URL.short_code == short_code))
+
+    if existing_db_url:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Short code already exists"
+        )
+
     db_url = URL(
         original_url=str(url.original_url), short_code=short_code, user_id=user_id
     )
 
-    db.add(db_url)
-    db.commit()
-    db.refresh(db_url)
+    try:
+        db.add(db_url)
+        db.commit()
+        db.refresh(db_url)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Short code already exists"
+        )
 
     return db_url
 
@@ -63,7 +81,9 @@ def url_delete(id: int, user_id: int, db: Session):
     db_url = db.scalar(statement)
 
     if db_url is None:
-        raise HTTPException(status_code=404, detail="URL NOT FOUND")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL NOT FOUND"
+        )
 
     db.delete(db_url)
     db.commit()
@@ -76,18 +96,25 @@ def url_get_by_short_code(short_code: str, db: Session):
     db_url = db.scalar(statement)
 
     if db_url is None:
-        raise HTTPException(status_code=404, detail="URL NOT FOUND")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL NOT FOUND"
+        )
 
     if db_url.is_active is False:
-        raise HTTPException(status_code=400, detail="URL INACTIVE")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="URL INACTIVE"
+        )
 
     click_count = db_url.click_count or 0
 
     if db_url.click_max is not None and click_count >= db_url.click_max:
-        raise HTTPException(status_code=403, detail="URL CLICK LIMIT HAS BEEN REACHED")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="URL CLICK LIMIT HAS BEEN REACHED",
+        )
 
     if db_url.expires_at is not None and db_url.expires_at <= datetime.now():
-        raise HTTPException(status_code=410, detail="URL EXPIRED")
+        raise HTTPException(status_code=status.HTTP_410_GONE, detail="URL EXPIRED")
 
     increase_click_count(db_url, db)
 
