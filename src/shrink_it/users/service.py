@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from .models import User
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -62,9 +62,6 @@ def user_admin_status(id: int, admin_status: bool, db: Session):
 
     user_db.is_admin = admin_status
     db.commit()
+    db.refresh(user_db)
 
-    return {"message": "success"}
-
-
-def show_urls(id: int, db: Session):
-    pass
+    return user_db

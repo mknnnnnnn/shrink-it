@@ -32,7 +32,7 @@ def user_active_status(
     return service.user_active_status(id=id, active_status=status, db=db)
 
 
-@router.patch("/{id}/admin-status/{status}")
+@router.patch("/{id}/admin-status/{status}", response_model=UserResponse)
 def user_admin_status(
     id: int, status: bool, db: Session = Depends(get_db), user=Depends(require_admin)
 ):
