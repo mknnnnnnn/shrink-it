@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from .schemas import UserResponse
 from sqlalchemy.orm import Session
 from ..database import get_db
@@ -20,12 +20,12 @@ def user_get_by_id(id: int, db: Session = Depends(get_db), user=Depends(require_
     return service.user_get_by_id(id=id, db=db)
 
 
-@router.delete("/{id}/delete")
+@router.delete("/{id}/delete", status_code=status.HTTP_204_NO_CONTENT)
 def user_delete(id: int, db: Session = Depends(get_db), user=Depends(require_admin)):
     return service.user_delete(id=id, db=db)
 
 
-@router.patch("/{id}/active-status/{status}")
+@router.patch("/{id}/active-status/{status}", response_model=UserResponse)
 def user_active_status(
     id: int, status: bool, db: Session = Depends(get_db), user=Depends(require_admin)
 ):

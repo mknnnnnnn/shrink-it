@@ -36,8 +36,6 @@ def user_delete(id: int, db: Session):
     db.delete(db_user)
     db.commit()
 
-    return {"message": "User has been deleted"}
-
 
 def user_active_status(id: int, active_status: bool, db: Session):
     db_user = db.get(User, id)
@@ -49,8 +47,9 @@ def user_active_status(id: int, active_status: bool, db: Session):
 
     db_user.is_active = active_status
     db.commit()
+    db.refresh(db_user)
 
-    return {"message": "success"}
+    return db_user
 
 
 def user_admin_status(id: int, admin_status: bool, db: Session):
