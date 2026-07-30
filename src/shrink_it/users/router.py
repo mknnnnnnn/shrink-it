@@ -15,7 +15,7 @@ def users_get(db: Session = Depends(get_db), user=Depends(require_admin)):
     return service.user_get(db=db)
 
 
-@router.get("{id}", response_model=UserResponse | None)
+@router.get("/{id}", response_model=UserResponse | None)
 def user_get_by_id(id: int, db: Session = Depends(get_db), user=Depends(require_admin)):
     return service.user_get_by_id(id=id, db=db)
 
