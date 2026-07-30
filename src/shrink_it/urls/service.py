@@ -24,7 +24,7 @@ def generate_qr_code(short_code: str, user_id: int, db: Session):
 
     if db_url is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="URL NOT FOUND"
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
         )
 
     img = qrcode.make(db_url.original_url)
@@ -82,7 +82,7 @@ def url_delete(id: int, user_id: int, db: Session):
 
     if db_url is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="URL NOT FOUND"
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
         )
 
     db.delete(db_url)
@@ -97,12 +97,12 @@ def url_get_by_short_code(short_code: str, db: Session):
 
     if db_url is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="URL NOT FOUND"
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
         )
 
     if db_url.is_active is False:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="URL INACTIVE"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="URL inactive"
         )
 
     click_count = db_url.click_count or 0
@@ -110,11 +110,11 @@ def url_get_by_short_code(short_code: str, db: Session):
     if db_url.click_max is not None and click_count >= db_url.click_max:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="URL CLICK LIMIT HAS BEEN REACHED",
+            detail="URL click limit has been reached",
         )
 
     if db_url.expires_at is not None and db_url.expires_at <= datetime.now():
-        raise HTTPException(status_code=status.HTTP_410_GONE, detail="URL EXPIRED")
+        raise HTTPException(status_code=status.HTTP_410_GONE, detail="URL exipred")
 
     increase_click_count(db_url, db)
 
@@ -126,10 +126,14 @@ def url_deactivate(id: int, user_id: int, db: Session):
     db_url = db.scalar(statement)
 
     if db_url is None:
-        raise HTTPException(status_code=404, detail="URL NOT FOUND")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
+        )
 
     if db_url.is_active is False:
-        raise HTTPException(status_code=400, detail="URL INACTIVE")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="URL inactive"
+        )
 
     db_url.is_active = False
     db.commit()
@@ -143,10 +147,14 @@ def url_activate(id: int, user_id: int, db: Session):
     db_url = db.scalar(statement)
 
     if db_url is None:
-        raise HTTPException(status_code=404, detail="URL NOT FOUND")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
+        )
 
     if db_url.is_active is True:
-        raise HTTPException(status_code=400, detail="URL ACTIVE")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="URL inactive"
+        )
 
     db_url.is_active = True
     db.commit()
@@ -159,7 +167,9 @@ def change_max_click(id: int, limit: int, db: Session):
     db_url = db.get(URL, id)
 
     if db_url is None:
-        raise HTTPException(status_code=404, detail="NOT FOUND")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
+        )
 
     db_url.click_max = limit
 
@@ -173,7 +183,9 @@ def change_expire_date(id: int, expire_date: datetime, db: Session):
     db_url = db.get(URL, id)
 
     if db_url is None:
-        raise HTTPException(status_code=404, detail="URL NOT FOUND")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
+        )
 
     db_url.expires_at = expire_date
 
