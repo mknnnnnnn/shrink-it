@@ -47,30 +47,43 @@ def increase_click_count(url: URL, db: Session):
 
 
 def url_create(url: URLCreate, db: Session, user_id: int):
-    short_code = url.short_code or generate_code()
+    custom_code = url.short_code is not None
 
-    existing_db_url = db.scalar(select(URL).where(URL.short_code == short_code))
+    for _ in range(5):
+        short_code = url.short_code if custom_code else generate_code()
 
-    if existing_db_url:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Short code already exists"
+        db_url = db.scalar(select(URL).where(URL.short_code == short_code))
+
+        if db_url:
+            if custom_code:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Short code already exists",
+                )
+
+            continue
+
+        db_url = URL(
+            original_url=str(url.original_url), short_code=short_code, user_id=user_id
         )
 
-    db_url = URL(
-        original_url=str(url.original_url), short_code=short_code, user_id=user_id
+        try:
+            db.add(db_url)
+            db.commit()
+            db.refresh(db_url)
+            return db_url
+        except IntegrityError:
+            db.rollback()
+            if custom_code:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Short code already exists",
+                )
+
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail="Error during short code generation",
     )
-
-    try:
-        db.add(db_url)
-        db.commit()
-        db.refresh(db_url)
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Short code already exists"
-        )
-
-    return db_url
 
 
 def url_get(user_id: int, db: Session):
