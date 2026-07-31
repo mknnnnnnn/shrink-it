@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
+from ..auth.security import hash_password, verify_password
 from .models import User
-from .schemas import UpdateUser
+from .schemas import UpdateUser, UpdateUserPassword
 
 
 def user_get(db: Session):
@@ -96,3 +97,23 @@ def user_update(id: int, user: UpdateUser, db: Session):
         )
 
     return db_user
+
+
+def update_password(id: int, password: UpdateUserPassword, db: Session):
+    db_user = db.get(User, id)
+
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    if not verify_password(password.current_password, db_user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect password"
+        )
+
+    new_hashed_password = hash_password(password.new_password)
+
+    db_user.password = new_hashed_password
+
+    db.commit()

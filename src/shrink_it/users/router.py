@@ -2,11 +2,23 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..auth.dependencies import require_admin
+from ..auth.dependencies import require_admin, get_current_user
+from .schemas import UserResponse, UpdateUser, UpdateUserPassword
 from . import service
-from .schemas import UserResponse, UpdateUser
 
 router = APIRouter(tags=["users"], prefix="/users")
+
+# User endpoint
+
+
+@router.patch("/password", status_code=status.HTTP_204_NO_CONTENT)
+def update_password(
+    password: UpdateUserPassword,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+):
+    return service.update_password(id=user.id, password=password, db=db)
+
 
 # Only admin endpoints
 
