@@ -2,18 +2,20 @@ from pydantic import BaseModel, HttpUrl, ConfigDict, Field
 from datetime import datetime
 
 
-class URLCreate(BaseModel):
+class URLBase(BaseModel):
     original_url: HttpUrl
-    short_code: str | None = None
 
 
-class URLResponse(BaseModel):
+class URLCreate(URLBase):
+    short_code: str | None = Field(default=None, min_length=3, max_length=10)
+
+
+class URLResponse(URLBase):
     id: int
-    original_url: HttpUrl
-    short_code: str = Field(default=None, min_length=3, max_length=10)
+    short_code: str
     created_at: datetime
     expires_at: datetime | None = None
-    click_count: int | None = None
+    click_count: int
     click_max: int | None = None
     is_active: bool = True
 
