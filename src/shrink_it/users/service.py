@@ -81,7 +81,7 @@ def user_update(id: int, user: UpdateUser, db: Session):
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
 
-    data = user.model_dump(exclude_unset=True)
+    data = user.model_dump(exclude_unset=True, exclude_none=True)
 
     for field, value in data.items():
         setattr(db_user, field, value)

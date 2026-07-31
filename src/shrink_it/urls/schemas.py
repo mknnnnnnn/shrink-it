@@ -7,7 +7,9 @@ class URLBase(BaseModel):
 
 
 class URLCreate(URLBase):
-    short_code: str | None = Field(default=None, min_length=3, max_length=10)
+    short_code: str | None = Field(
+        default=None, min_length=3, max_length=10, pattern=r"^[a-zA-Z0-9]+$"
+    )
 
 
 class URLResponse(URLBase):
