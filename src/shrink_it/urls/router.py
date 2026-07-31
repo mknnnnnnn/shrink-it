@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from datetime import datetime
-from . import service
-from .schemas import *
+
 from ..database import get_db
 from ..auth.dependencies import get_current_user, require_admin
+from . import service
+from .schemas import URLCreate, URLResponse
 
 router = APIRouter(tags=["urls"], prefix="/urls")
 redirect_router = APIRouter(tags=["redirect"])
