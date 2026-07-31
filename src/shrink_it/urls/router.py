@@ -10,7 +10,7 @@ router = APIRouter(tags=["urls"], prefix="/urls")
 redirect_router = APIRouter(tags=["redirect"])
 
 
-@router.post("", response_model=URLResponse)
+@router.post("", response_model=URLResponse, status_code=status.HTTP_201_CREATED)
 def create_url(
     url: URLCreate, db: Session = Depends(get_db), user=Depends(get_current_user)
 ):
