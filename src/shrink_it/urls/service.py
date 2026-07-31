@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from fastapi.responses import StreamingResponse, RedirectResponse
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError
 from random import choices
 from datetime import datetime
 from io import BytesIO
@@ -12,6 +12,7 @@ from sqlalchemy import select
 
 from .schemas import URLCreate
 from .models import URL
+from ..config import BASE_URL
 
 
 def generate_code(length: int = 5) -> str:
@@ -27,14 +28,15 @@ def generate_qr_code(short_code: str, user_id: int, db: Session):
             status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
         )
 
-    img = qrcode.make(db_url.original_url)
+    url = f"{BASE_URL.rstrip("/")}/{db_url.short_code}"
+    img = qrcode.make(url)
     buffer = BytesIO()
 
     img.save(buffer, format="PNG")
     buffer.seek(0)
 
     return StreamingResponse(
-        buffer, status_code=status.HTTP_201_CREATED, media_type="image/png"
+        buffer, status_code=status.HTTP_200_OK, media_type="image/png"
     )
 
 
@@ -62,7 +64,7 @@ def url_create(url: URLCreate, db: Session, user_id: int):
         db.add(db_url)
         db.commit()
         db.refresh(db_url)
-    except SQLAlchemyError:
+    except IntegrityError:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Short code already exists"

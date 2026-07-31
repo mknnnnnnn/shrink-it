@@ -20,3 +20,6 @@ DATABASE_URL = (
 ALGORITHM = os.getenv("ALGORITHM")
 SECRET = os.getenv("SECRET")
 ACCESS_TOKEN_EXPIRE = int(os.getenv("ACCESS_TOKEN_EXPIRE"))
+
+# Base URL
+BASE_URL = os.getenv("BASE_URL")
