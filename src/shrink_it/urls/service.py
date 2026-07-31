@@ -112,7 +112,7 @@ def url_get_by_short_code(short_code: str, db: Session):
         )
 
     if db_url.expires_at is not None and db_url.expires_at <= datetime.now():
-        raise HTTPException(status_code=status.HTTP_410_GONE, detail="URL exipred")
+        raise HTTPException(status_code=status.HTTP_410_GONE, detail="URL expired")
 
     increase_click_count(db_url, db)
 
@@ -151,7 +151,7 @@ def url_activate(id: int, user_id: int, db: Session):
 
     if db_url.is_active is True:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="URL inactive"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="URL already active"
         )
 
     db_url.is_active = True
