@@ -1,12 +1,28 @@
 from ..users.models import User
 from ..users.schemas import UserRegister
 from .security import hash_password, verify_password, create_token
-from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 
 
 def register_user(user: UserRegister, db: Session):
+    existing_db_user = db.scalar(select(User).where(User.email == user.email))
+    if existing_db_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Email already exists"
+        )
+
+    if user.phone_number:
+        phone_number = db.scalar(
+            select(User).where(User.phone_number == user.phone_number)
+        )
+        if phone_number:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Phone number already exists",
+            )
 
     db_user = User(
         first_name=user.first_name,
@@ -15,9 +31,16 @@ def register_user(user: UserRegister, db: Session):
         password=hash_password(user.password),
         phone_number=user.phone_number,
     )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+
+    try:
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="User already exists"
+        )
 
     return db_user
 
