@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, status
-from .schemas import UserResponse
 from sqlalchemy.orm import Session
+
 from ..database import get_db
 from ..auth.dependencies import require_admin
 from . import service
+from .schemas import UserResponse, UpdateUser
 
 router = APIRouter(tags=["users"], prefix="/users")
 
@@ -37,3 +38,13 @@ def user_admin_status(
     id: int, status: bool, db: Session = Depends(get_db), user=Depends(require_admin)
 ):
     return service.user_admin_status(id=id, admin_status=status, db=db)
+
+
+@router.patch("/{id}", response_model=UserResponse)
+def update_user(
+    id: int,
+    user: UpdateUser,
+    db: Session = Depends(get_db),
+    admin=Depends(require_admin),
+):
+    return service.user_update(id=id, user=user, db=db)

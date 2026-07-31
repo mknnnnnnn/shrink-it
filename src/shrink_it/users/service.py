@@ -1,7 +1,10 @@
 from fastapi import HTTPException, status
-from .models import User
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+
+from .models import User
+from .schemas import UpdateUser
 
 
 def user_get(db: Session):
@@ -65,3 +68,31 @@ def user_admin_status(id: int, admin_status: bool, db: Session):
     db.refresh(user_db)
 
     return user_db
+
+
+def user_update(id: int, user: UpdateUser, db: Session):
+    statement = select(User).where(User.id == id)
+
+    db_user = db.scalar(statement)
+
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    data = user.model_dump(exclude_unset=True)
+
+    for field, value in data.items():
+        setattr(db_user, field, value)
+
+    try:
+        db.commit()
+        db.refresh(db_user)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email or phone number already exists",
+        )
+
+    return db_user
