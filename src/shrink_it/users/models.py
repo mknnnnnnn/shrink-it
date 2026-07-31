@@ -13,17 +13,15 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True, nullable=False, index=True)
-    first_name: Mapped[str] = mapped_column(String, nullable=False)
-    last_name: Mapped[str] = mapped_column(String, nullable=False)
+    first_name: Mapped[str] = mapped_column(String(20), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(20), nullable=False)
     email: Mapped[str] = mapped_column(String, nullable=False, unique=True, index=True)
     password: Mapped[str] = mapped_column(String, nullable=False)
     phone_number: Mapped[str | None] = mapped_column(
-        String, nullable=True, default=None, unique=True, index=True
+        String, nullable=True, unique=True, index=True
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    is_admin: Mapped[bool | None] = mapped_column(
-        Boolean, default=False, nullable=False
-    )
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )

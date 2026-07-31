@@ -1,22 +1,16 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from datetime import datetime
 
 
 class UserBase(BaseModel):
-    first_name: str
-    last_name: str
+    first_name: str = Field(min_length=1, max_length=20)
+    last_name: str = Field(min_length=1, max_length=20)
     email: EmailStr
-    phone_number: str | None = None
-    is_active: bool = True
-    is_admin: bool | None = False
+    phone_number: str | None = Field(default=None, pattern=r"^\+?[1-9][0-9]+$")
 
 
-class UserRegister(BaseModel):
-    first_name: str
-    last_name: str
-    email: EmailStr
-    password: str
-    phone_number: str | None = None
+class UserRegister(UserBase):
+    password: str = Field(min_length=8)
 
 
 class UserLogin(BaseModel):
@@ -26,6 +20,8 @@ class UserLogin(BaseModel):
 
 class UserResponse(UserBase):
     id: int
+    is_active: bool
+    is_admin: bool
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
