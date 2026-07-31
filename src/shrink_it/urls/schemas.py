@@ -10,7 +10,7 @@ class URLCreate(BaseModel):
 class URLResponse(BaseModel):
     id: int
     original_url: HttpUrl
-    short_code: str
+    short_code: str = Field(default=None, min_length=3, max_length=10)
     created_at: datetime
     expires_at: datetime | None = None
     click_count: int | None = None
