@@ -35,7 +35,7 @@ def user_get_by_id(id: int, db: Session = Depends(get_db), user=Depends(require_
 
 @router.delete("/{id}/delete", status_code=status.HTTP_204_NO_CONTENT)
 def user_delete(id: int, db: Session = Depends(get_db), user=Depends(require_admin)):
-    return service.user_delete(id=id, db=db)
+    service.user_delete(id=id, db=db)
 
 
 @router.patch("/{id}/active-status/{status}", response_model=UserResponse)
