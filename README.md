@@ -2,7 +2,7 @@
 
 Shrink it is a backend URL shortener built with FastAPI, PostgreSQL, and Docker.
 
-It supports custom aliases, QR code generation, click analytics, link expiration, click limits, and user authentication.
+It supports custom aliases, QR code generation, link expiration, click limits, and user authentication.
 
 ## Features
 
@@ -13,7 +13,6 @@ It supports custom aliases, QR code generation, click analytics, link expiration
 - Supports one-time links
 - Stores data in PostgreSQL
 - Tracks click counts
-- Provides click analytics
 - Supports maximum click limits
 - Supports user accounts
 
@@ -46,23 +45,20 @@ http://localhost:8000/example-short-code
 Users can provide custom aliases instead of using randomly generated short code.
 
 ### Link expiration
-Links can expire after the given date and time. Links will be no longer available after expiration.
+Admins can set an expiration date for links. Links will be no longer available after expiration.
 
 ### One-time links
-Links can be opened only once. 
+Admins can create one-time links by setting maximum click limit to one.
 
 ### Maximum click limits
-User can set the maximum number of allowed clicks. After reaching the limit, the link is not longer available.
-
-### Click analytics
-The application track link usage, including click count and basics information.
+Admins can set the maximum number of allowed clicks. After reaching the limit, the link is no longer available.
 
 ## API Methods
 
 ### URL API
 
 Most URL endpoints require authentication. 
-The `/{short_code}` endpoint is public and redirects to the orginal URL.
+The `/{short_code}` endpoint is public and redirects to the original URL.
 Changing the maximum click limit and expiration date requires admin permissions.
 
 | Method | Endpoint | Required role | Description |
