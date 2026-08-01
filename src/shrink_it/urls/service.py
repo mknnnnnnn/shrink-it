@@ -1,5 +1,7 @@
 from fastapi import HTTPException, status
 from fastapi.responses import StreamingResponse, RedirectResponse
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from random import choices
 from datetime import datetime
@@ -7,12 +9,11 @@ from io import BytesIO
 import string
 import qrcode
 
-from sqlalchemy.orm import Session
-from sqlalchemy import select
-
 from .schemas import URLCreate
 from .models import URL
 from ..config import BASE_URL
+
+# Functions
 
 
 def generate_code(length: int = 5) -> str:
@@ -44,6 +45,9 @@ def increase_click_count(url: URL, db: Session):
     url.click_count = (url.click_count or 0) + 1
     db.commit()
     db.refresh(url)
+
+
+# Create operations
 
 
 def url_create(url: URLCreate, db: Session, user_id: int):
@@ -86,22 +90,12 @@ def url_create(url: URLCreate, db: Session, user_id: int):
     )
 
 
+# Read operations
+
+
 def url_get(user_id: int, db: Session):
     statement = select(URL).where(URL.user_id == user_id)
     return db.scalars(statement).all()
-
-
-def url_delete(id: int, user_id: int, db: Session):
-    statement = select(URL).where(URL.user_id == user_id, URL.id == id)
-    db_url = db.scalar(statement)
-
-    if db_url is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
-        )
-
-    db.delete(db_url)
-    db.commit()
 
 
 def url_get_by_short_code(short_code: str, db: Session):
@@ -132,6 +126,9 @@ def url_get_by_short_code(short_code: str, db: Session):
     increase_click_count(db_url, db)
 
     return RedirectResponse(url=db_url.original_url)
+
+
+# Update operations
 
 
 def url_deactivate(id: int, user_id: int, db: Session):
@@ -206,3 +203,19 @@ def change_expire_date(id: int, expire_date: datetime, db: Session):
     db.refresh(db_url)
 
     return db_url
+
+
+# Delete operations
+
+
+def url_delete(id: int, user_id: int, db: Session):
+    statement = select(URL).where(URL.user_id == user_id, URL.id == id)
+    db_url = db.scalar(statement)
+
+    if db_url is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
+        )
+
+    db.delete(db_url)
+    db.commit()

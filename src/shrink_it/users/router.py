@@ -8,10 +8,10 @@ from . import service
 
 router = APIRouter(tags=["users"], prefix="/users")
 
-# User endpoint
+# User endpoints
 
 
-@router.patch("/password", status_code=status.HTTP_204_NO_CONTENT)
+@router.patch("/me/password", status_code=status.HTTP_204_NO_CONTENT)
 def update_password(
     password: UpdateUserPassword,
     db: Session = Depends(get_db),
@@ -20,7 +20,7 @@ def update_password(
     return service.update_password(id=user.id, password=password, db=db)
 
 
-# Only admin endpoints
+# Admin endpoints
 
 
 @router.get("", response_model=list[UserResponse])
@@ -31,11 +31,6 @@ def users_get(db: Session = Depends(get_db), user=Depends(require_admin)):
 @router.get("/{id}", response_model=UserResponse)
 def user_get_by_id(id: int, db: Session = Depends(get_db), user=Depends(require_admin)):
     return service.user_get_by_id(id=id, db=db)
-
-
-@router.delete("/{id}/delete", status_code=status.HTTP_204_NO_CONTENT)
-def user_delete(id: int, db: Session = Depends(get_db), user=Depends(require_admin)):
-    service.user_delete(id=id, db=db)
 
 
 @router.patch("/{id}/active-status/{status}", response_model=UserResponse)
@@ -60,3 +55,8 @@ def update_user(
     admin=Depends(require_admin),
 ):
     return service.user_update(id=id, user=user, db=db)
+
+
+@router.delete("/{id}/delete", status_code=status.HTTP_204_NO_CONTENT)
+def user_delete(id: int, db: Session = Depends(get_db), user=Depends(require_admin)):
+    service.user_delete(id=id, db=db)

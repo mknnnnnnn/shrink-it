@@ -10,6 +10,8 @@ from .schemas import URLCreate, URLResponse
 router = APIRouter(tags=["urls"], prefix="/urls")
 redirect_router = APIRouter(tags=["redirect"])
 
+# User endpoints
+
 
 @router.post("", response_model=URLResponse, status_code=status.HTTP_201_CREATED)
 def create_url(
