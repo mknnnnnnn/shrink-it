@@ -99,7 +99,7 @@ def url_get(user_id: int, db: Session):
 
 
 def url_get_by_short_code(short_code: str, db: Session):
-    statement = select(URL).where(URL.short_code == short_code)
+    statement = select(URL).where(URL.short_code == short_code).with_for_update()
     db_url = db.scalar(statement)
 
     if db_url is None:
