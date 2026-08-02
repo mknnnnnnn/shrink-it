@@ -63,10 +63,10 @@ Changing the maximum click limit and expiration date requires admin permissions.
 
 | Method | Endpoint | Required role | Description |
 |---|---|---|---|
+| `GET` | `/{short_code}` | Public | Redirect to the original URL |
 | `GET` | `/urls` | User | Get all URLs available for the authenticated user |
 | `POST` | `/urls` | User | Create a new short URL |
 | `GET` | `/urls/qr` | User | Generate a QR code for a URL |
-| `GET` | `/{short_code}` | Public | Redirect to the original URL |
 | `PATCH` | `/urls/{id}/deactivate` | User | Deactivate a URL |
 | `PATCH` | `/urls/{id}/activate` | User | Activate a URL |
 | `DELETE` | `/urls/{id}` | User | Delete a URL |
@@ -75,10 +75,12 @@ Changing the maximum click limit and expiration date requires admin permissions.
 
 ### Users API
 
-All user management endpoints require admin permissions.
+Most user management endpoints require admin permissions. Authenticated users can change their own password.
 
 | Method | Endpoint | Required role | Description |
 |---|---|---|---|
+| `PATCH` | `/users/me/password` | User | Change the authenticated user's password |
+| `PATCH` | `/users/{id}` | Admin | Update user details |
 | `GET` | `/users` | Admin | Get all users |
 | `GET` | `/users/{id}` | Admin | Get user details by ID |
 | `DELETE` | `/users/{id}/delete` | Admin | Delete a user |
@@ -95,6 +97,36 @@ Authentication is handled with OAuth2 password flow and JWT bearer tokens.
 | `POST` | `/auth/login` | Public | Log in user and return a bearer token |
 
 In Swagger UI, users can authenticate by clicking the **Authorize** button and providing their username and password.
+
+## Data Validation
+
+Request validation is handled with Pydantic. It includes:
+
+- valid email addresses,
+- valid original URLs,
+- first and last names between 1 and 20 characters,
+- passwords with a minimum length of 8 characters,
+- optional international phone numbers,
+- custom short codes between 3 and 10 characters,
+- alphanumeric custom short codes,
+- separate schemas for registration, login, updates and responses.
+
+Invalid request data returns a `422 Unprocessable Entity` response.
+
+## Error Handling
+
+| Status | Meaning |
+|---|---|
+| `400 Bad Request` | URL is inactive or already active |
+| `401 Unauthorized` | Credentials or authentication token are invalid |
+| `403 Forbidden` | User does not have permission or the click limit has been reached |
+| `404 Not Found` | User or URL does not exist |
+| `409 Conflict` | Email, phone number or custom short code already exists |
+| `410 Gone` | URL has expired |
+| `422 Unprocessable Entity` | Request validation failed |
+| `500 Internal Server Error` | Short-code generation failed |
+
+Database integrity errors are handled with transaction rollback.
 
 ## Setup - Docker Compose
 
