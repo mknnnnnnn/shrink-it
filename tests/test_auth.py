@@ -135,3 +135,133 @@ def test_login_with_incorrect_password(client: TestClient):
 
     assert login_response.status_code == 401
     assert "access_token" not in login_response.json()
+
+
+def test_access_protected_endpoint_without_token(client: TestClient):
+
+    response = client.patch(
+        "/users/me/password",
+        json={"current_password": "Password123!", "new_password": "Password123123!"},
+    )
+
+    assert response.status_code == 401
+
+
+def test_access_protected_endpoint_with_invalid_token(client: TestClient):
+
+    response = client.patch(
+        "/users/me/password",
+        headers={"Authorization": f"Bearer invalid"},
+        json={"current_password": "Password123!", "new_password": "Password123123!"},
+    )
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid token"
+
+
+def test_access_protected_endpoint_with_correct_token(client: TestClient):
+
+    user = {
+        "first_name": "Jan",
+        "last_name": "Kowalski",
+        "email": "jan.kowalski@example.com",
+        "password": "KotRyszard123!",
+        "phone_number": "+48123123123",
+    }
+
+    register_response = client.post("/auth/register", json=user)
+
+    assert register_response.status_code == 201
+
+    login_response = client.post(
+        "/auth/login", data={"username": user["email"], "password": user["password"]}
+    )
+
+    assert login_response.status_code == 200
+
+    token = login_response.json()["access_token"]
+
+    password_response = client.patch(
+        "/users/me/password",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"current_password": user["password"], "new_password": "KotAntek123!"},
+    )
+
+    assert password_response.status_code == 204
+
+
+def test_change_password_with_incorrect_current_password(client: TestClient):
+
+    user = {
+        "first_name": "Jan",
+        "last_name": "Kowalski",
+        "email": "jan.kowalski@example.com",
+        "password": "KotRyszard123!",
+        "phone_number": "+48123123123",
+    }
+
+    register_response = client.post("/auth/register", json=user)
+
+    assert register_response.status_code == 201
+
+    login_response = client.post(
+        "/auth/login", data={"username": user["email"], "password": user["password"]}
+    )
+
+    assert login_response.status_code == 200
+
+    token = login_response.json()["access_token"]
+
+    password_response = client.patch(
+        "/users/me/password",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "current_password": "IncorrectPassword123!",
+            "new_password": "KotAntek123!",
+        },
+    )
+
+    assert password_response.status_code == 401
+
+
+def test_change_password_success(client: TestClient):
+    password = "KotRyszard123!"
+    new_password = "KotAntek123123!"
+
+    user = {
+        "first_name": "Jan",
+        "last_name": "Kowalski",
+        "email": "jan.kowalski@example.com",
+        "password": password,
+        "phone_number": "+48123123123",
+    }
+
+    register_response = client.post("/auth/register", json=user)
+
+    assert register_response.status_code == 201
+
+    login_response = client.post(
+        "/auth/login", data={"username": user["email"], "password": user["password"]}
+    )
+
+    assert login_response.status_code == 200
+
+    token = login_response.json()["access_token"]
+
+    password_response = client.patch(
+        "/users/me/password",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "current_password": password,
+            "new_password": new_password,
+        },
+    )
+
+    assert password_response.status_code == 204
+
+    new_password_login_response = client.post(
+        "/auth/login", data={"username": user["email"], "password": new_password}
+    )
+    assert new_password_login_response.status_code == 200
+    assert "access_token" in new_password_login_response.json()
+    assert new_password_login_response.json()["token_type"] == "bearer"
