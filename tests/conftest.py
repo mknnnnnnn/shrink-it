@@ -39,3 +39,40 @@ def client(db_session):
         yield client_test
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def login(client):
+
+    user = {
+        "first_name": "Jan",
+        "last_name": "Kowalski",
+        "email": "jan.kowalski@example.com",
+        "password": "KotRyszard123!",
+        "phone_number": "+48123123123",
+    }
+
+    register = client.post("/auth/register", json=user)
+
+    assert register.status_code == 201
+
+    assert register.json()["first_name"] == user["first_name"]
+    assert register.json()["last_name"] == user["last_name"]
+    assert register.json()["email"] == user["email"]
+    assert register.json()["phone_number"] == user["phone_number"]
+
+    assert register.json()["is_active"] is True
+    assert register.json()["is_admin"] is False
+
+    assert "password" not in register.json()
+
+    login = client.post(
+        "/auth/login", data={"username": user["email"], "password": user["password"]}
+    )
+
+    assert login.status_code == 200
+
+    assert "access_token" in login.json()
+    assert login.json()["token_type"] == "bearer"
+
+    return login.json()
