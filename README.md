@@ -26,6 +26,8 @@ It supports custom aliases, QR code generation, link expiration, click limits, a
 - Pydantic
 - Docker
 - Docker Compose
+- Pytest
+- GitHub Actions
 
 ## Overview
 
@@ -162,4 +164,15 @@ docker compose down
 Remove the database volume:
 ```bash
 docker compose down -v
+```
+
+## Tests
+
+The project includes automated tests written with `pytest`. 
+
+Tests are also automatically executed with GitHub Actions on every push and pull request.
+
+Run tests locally with:
+```bash
+pytest
 ```
