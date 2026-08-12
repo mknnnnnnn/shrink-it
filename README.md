@@ -1,5 +1,7 @@
 # Shrink it
 
+[![Python Tests](https://github.com/mknnnnnnn/shrink-it/actions/workflows/ci.yml/badge.svg)](https://github.com/mknnnnnnn/shrink-it/actions/workflows/ci.yml)
+
 Shrink it is a backend URL shortener built with FastAPI, PostgreSQL, and Docker.
 
 It supports custom aliases, QR code generation, link expiration, click limits, and user authentication.
