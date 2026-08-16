@@ -20,10 +20,24 @@ jobs:
       BASE_URL: http://localhost:8000
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Check repository
+        uses: actions/checkout@v4
+      
+      - name: Set up python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - run: pip install -r requirements.txt
-      - run: pytest
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install ruff pytest-cov
+      
+      - name: Ruff format check
+        run: ruff format --check .
+      
+      - name: Ruff lint check
+        run: ruff check . --ignore=B008
+
+      - name: Run pytest with cov
+        run: pytest --cov=src --cov-report=term-missing
