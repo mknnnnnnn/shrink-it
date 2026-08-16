@@ -1,17 +1,18 @@
-from fastapi import HTTPException, status
-from fastapi.responses import StreamingResponse, RedirectResponse
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from random import choices
-from datetime import datetime, UTC
-from io import BytesIO
 import string
-import qrcode
+from datetime import UTC, datetime
+from io import BytesIO
+from random import choices
 
-from .schemas import URLCreate
-from .models import URL
+import qrcode
+from fastapi import HTTPException, status
+from fastapi.responses import RedirectResponse, StreamingResponse
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
 from ..config import BASE_URL
+from .models import URL
+from .schemas import URLCreate
 
 # Functions
 
@@ -29,7 +30,7 @@ def generate_qr_code(short_code: str, user_id: int, db: Session):
             status_code=status.HTTP_404_NOT_FOUND, detail="URL not found"
         )
 
-    url = f"{BASE_URL.rstrip("/")}/{db_url.short_code}"
+    url = f"{BASE_URL.rstrip('/')}/{db_url.short_code}"
     img = qrcode.make(url)
     buffer = BytesIO()
 

@@ -2,8 +2,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from shrink_it.users.models import User
 from shrink_it.auth.security import verify_password
+from shrink_it.users.models import User
 
 
 def test_register_user_success(client: TestClient, db_session: Session):
@@ -151,7 +151,7 @@ def test_access_protected_endpoint_with_invalid_token(client: TestClient):
 
     response = client.patch(
         "/users/me/password",
-        headers={"Authorization": f"Bearer invalid"},
+        headers={"Authorization": "Bearer invalid"},
         json={"current_password": "Password123!", "new_password": "Password123123!"},
     )
 

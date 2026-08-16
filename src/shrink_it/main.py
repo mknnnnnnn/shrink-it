@@ -1,8 +1,9 @@
 from fastapi import FastAPI
-from .database import Base, engine
-from .urls.router import router as urls_router, redirect_router
-from .users.router import router as users_router
+
 from .auth.router import router as auth_router
+from .urls.router import redirect_router
+from .urls.router import router as urls_router
+from .users.router import router as users_router
 
 app = FastAPI()
 

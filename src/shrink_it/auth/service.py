@@ -1,10 +1,11 @@
+from fastapi import HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
 from ..users.models import User
 from ..users.schemas import UserRegister
-from .security import hash_password, verify_password, create_token
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from fastapi import HTTPException, status
+from .security import create_token, hash_password, verify_password
 
 
 def register_user(user: UserRegister, db: Session):

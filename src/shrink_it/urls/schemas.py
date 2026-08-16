@@ -1,5 +1,6 @@
-from pydantic import BaseModel, HttpUrl, ConfigDict, Field
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 
 class URLBase(BaseModel):

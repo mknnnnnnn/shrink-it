@@ -1,12 +1,10 @@
+import sys
 from logging.config import fileConfig
+from pathlib import Path
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-
-from pathlib import Path
-import sys
 
 FULL_PATH = Path(__file__).resolve().parents[1]
 SRC_PATH = FULL_PATH / "src"
@@ -14,8 +12,6 @@ SRC_PATH = FULL_PATH / "src"
 sys.path.append(str(SRC_PATH))
 
 from shrink_it.config import DATABASE_URL
-from shrink_it.urls import models
-from shrink_it.users import models
 from shrink_it.database import Base
 
 # this is the Alembic Config object, which provides
