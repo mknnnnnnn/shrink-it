@@ -1,8 +1,8 @@
 """First migration
 
-Revision ID: 312b1b03ee7c
+Revision ID: 45d30fad8c51
 Revises: 
-Create Date: 2026-08-16 10:19:42.886590
+Create Date: 2026-08-16 10:47:49.965493
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '312b1b03ee7c'
+revision: str = '45d30fad8c51'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,7 +30,7 @@ def upgrade() -> None:
     sa.Column('phone_number', sa.String(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('is_admin', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=datetime.timezone.utc), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
@@ -40,8 +40,8 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('original_url', sa.String(), nullable=False),
     sa.Column('short_code', sa.String(length=10), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('expires_at', sa.DateTime(timezone=datetime.timezone.utc), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('expires_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('click_count', sa.Integer(), nullable=False),
     sa.Column('click_max', sa.Integer(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),

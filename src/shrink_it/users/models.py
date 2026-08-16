@@ -3,7 +3,7 @@ from sqlalchemy.orm import mapped_column, Mapped, relationship
 from typing import TYPE_CHECKING
 from ..database import Base
 
-from datetime import datetime, UTC
+from datetime import datetime
 
 if TYPE_CHECKING:
     from ..urls.models import URL
@@ -23,7 +23,7 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=UTC), server_default=func.now(), nullable=False
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
     urls: Mapped[list["URL"]] = relationship(

@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from random import choices
-from datetime import datetime
+from datetime import datetime, UTC
 from io import BytesIO
 import string
 import qrcode
@@ -120,7 +120,7 @@ def url_get_by_short_code(short_code: str, db: Session):
             detail="URL click limit has been reached",
         )
 
-    if db_url.expires_at is not None and db_url.expires_at <= datetime.now():
+    if db_url.expires_at is not None and db_url.expires_at <= datetime.now(UTC):
         raise HTTPException(status_code=status.HTTP_410_GONE, detail="URL expired")
 
     increase_click_count(db_url, db)
